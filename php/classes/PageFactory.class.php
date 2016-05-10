@@ -9,25 +9,22 @@ class PageFactory {
     }
 
     /**
-     * @param $get
-     * @param $post
+     * @param array $get
+     * @param array $post
+     * @param array $cfg
      * @return Page
      */
-    public function getPage($get, $post) {
-        $page = null;
+    public function getPage($get, $post, $cfg) {
         $pageName = null;
 
         if (!empty($get['page'])) {
             $pageName = $get['page'] . 'Page';
         }
 
-        if ($pageName !== null && class_exists($pageName)) {
-            $page = new $pageName($get, $post);
-        }
-        if ($page === null) {
-            $page = new $this->defaultPageName($get, $post);
+        if ($pageName === null || !class_exists($pageName)) {
+            $pageName = $this->defaultPageName;
         }
 
-        return $page;
+        return new $pageName($get, $post, $cfg);
     }
 }

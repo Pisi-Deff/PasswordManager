@@ -1,14 +1,12 @@
 <?php
 namespace tpl;
 
-function passwordRecoveryEmailText($username, $recoveryURL) {
-    $siteName = ""; // TODO: from cfg
-
+function passwordRecoveryEmailText($siteName, $username, $recoveryURL) {
     return <<<ENDTPL
     
-Hello ${username},
+Hello,
 
-A password recovery request was submitted on behalf of your user.
+A password recovery request was submitted on behalf of your user ${username}.
 Follow the link below to reset your password:
 {$recoveryURL}
 

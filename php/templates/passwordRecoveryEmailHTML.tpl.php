@@ -3,15 +3,13 @@ namespace tpl;
 
 require_once('emailHTMLBase.tpl.php');
 
-function passwordRecoveryEmailHTML($username, $recoveryURL) {
-    $siteName = ""; // TODO: from cfg
-
+function passwordRecoveryEmailHTML($siteName, $username, $recoveryURL) {
     $baseContent = <<<ENDTPL
     
-    <p>Hello ${username},</p>
+    <p>Hello,</p>
     
     <p>
-        A password recovery request was submitted on behalf of your user.
+        A password recovery request was submitted on behalf of your user ${username}.
         Follow the link below to reset your password:
         <a href="{$recoveryURL}">{$recoveryURL}</a>
     </p>

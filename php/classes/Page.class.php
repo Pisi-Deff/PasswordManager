@@ -1,32 +1,15 @@
 <?php
 
 abstract class Page {
-    private static $messages = array();
-
     protected $get;
     protected $post;
+    protected $cfg;
 
-    public function __construct($get, $post) {
+    public function __construct($get, $post, $cfg) {
         $this->get = $get;
         $this->post = $post;
-        $this->setup();
+        $this->cfg = $cfg;
     }
-
-    public function getMessages() {
-        $result = '';
-        if (!empty(self::$messages)) {
-            foreach (self::$messages as $msg) {
-                $result .= $msg->toHTML();
-            }
-        }
-        return $result;
-    }
-
-    public static function addMessage($msg) {
-        self::$messages[] = $msg;
-    }
-
-    abstract public function setup();
 
     abstract public function render();
 }

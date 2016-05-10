@@ -3,7 +3,7 @@ namespace tpl;
 
 require_once('centerContent.tpl.php');
 
-function error($error) {
+function errorPage($error) {
     $title = 'Error';
 
     $centerContent = <<<ENDTPL
