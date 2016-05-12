@@ -17,8 +17,8 @@ class ForgotPasswordPage extends Page {
      */
     protected $recoveryKeyStorage;
 
-    public function __construct($get, $post, $cfg) {
-        parent::__construct($get, $post, $cfg);
+    public function __construct($get, $post, $cfg, $dbActions) {
+        parent::__construct($get, $post, $cfg, $dbActions);
         
         $emailSettings = array(
             'host' => $cfg['email_host'],
@@ -38,8 +38,7 @@ class ForgotPasswordPage extends Page {
         // TODO: add limit checking/logging
         if ($this->post['username']) {
             $username = trim($this->post['username']);
-            // TODO: check user exists & get email
-            $email = '';
+            $email = $this->dbActions->getUserEmail($username);
 
             $recoveryURL = $this->generateRecoveryURL($username, $_SERVER['REMOTE_ADDR']);
 

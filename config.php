@@ -38,7 +38,7 @@ $cfg['applicationName'] = 'Site Name';
 /**
  *
  */
-$cfg['db_type'] = 'pgsql';
+$cfg['db_type'] = 'postgresql';
 
 /**
  *
@@ -97,6 +97,19 @@ $cfg['db_passwordChangedEventFunction'] = null;
 
 /**
  *
+ * If set to true, the values of the following parameters will be used
+ * for exchanging data with the database:
+ *   - db_getUserEmailFunction
+ *   - db_changePasswordFunction
+ *   - db_userAuthenticateFunction
+ *   - db_useHashedPasswordForFunctions
+ * 
+ * If set to false, the values of the following parameters will be used
+ * for exchanging data with the database:
+ *   - db_userTable
+ *   - db_usernameColumn
+ *   - db_emailColumn
+ *   - db_passwordColumn
  */
 $cfg['db_useDBFunctions'] = false;
 

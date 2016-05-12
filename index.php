@@ -27,5 +27,7 @@ spl_autoload_register(function ($class) {
 
 $pageFactory = new PageFactory('ChangePasswordPage');
 
-$page = $pageFactory->getPage($_GET, $_POST, $cfg);
+$dbActions = new DatabaseActions($cfg);
+
+$page = $pageFactory->getPage($_GET, $_POST, $cfg, $dbActions);
 echo $page->render();

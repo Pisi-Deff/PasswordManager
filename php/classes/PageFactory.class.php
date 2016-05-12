@@ -12,9 +12,10 @@ class PageFactory {
      * @param array $get
      * @param array $post
      * @param array $cfg
+     * @param DatabaseActions $dbActions
      * @return Page
      */
-    public function getPage($get, $post, $cfg) {
+    public function getPage($get, $post, $cfg, $dbActions) {
         $pageName = null;
 
         if (!empty($get['page'])) {
@@ -25,6 +26,6 @@ class PageFactory {
             $pageName = $this->defaultPageName;
         }
 
-        return new $pageName($get, $post, $cfg);
+        return new $pageName($get, $post, $cfg, $dbActions);
     }
 }
