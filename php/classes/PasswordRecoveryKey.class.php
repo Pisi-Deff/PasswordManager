@@ -64,6 +64,13 @@ class PasswordRecoveryKey {
 
     /**
      * @param DataStorage $dataStorage
+     */
+    public function delete($dataStorage) {
+        return $dataStorage->delete($this->key);
+    }
+
+    /**
+     * @param DataStorage $dataStorage
      * @param string $key
      */
     public static function load($dataStorage, $key) {

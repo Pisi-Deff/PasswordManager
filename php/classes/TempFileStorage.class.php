@@ -14,14 +14,16 @@ class TempFileStorage extends DataStorage {
         $this->folder = sys_get_temp_dir() . DIRECTORY_SEPARATOR;
     }
 
-    public function create($name, $content) {
+    public function _create($key, $content) {
         $content = json_encode($content);
-        $fileName = $this->makeFilePath($name);
-        file_put_contents($fileName, $content);
+        $fileName = $this->makeFilePath($key);
+        $success = file_put_contents($fileName, $content) !== false;
+        chmod($fileName, 0600); // RW for owner
+        return $success;
     }
 
-    public function read($name) {
-        $fileName = $this->makeFilePath($name);
+    public function _read($key) {
+        $fileName = $this->makeFilePath($key);
         $content = file_get_contents($fileName);
         if ($content !== false && strlen($content) > 0) {
             return json_decode($content, true);
@@ -30,12 +32,18 @@ class TempFileStorage extends DataStorage {
         return null;
     }
 
-    public function exists($name) {
-        $fileName = $this->makeFilePath($name);
+    public function _exists($key) {
+        $fileName = $this->makeFilePath($key);
         return is_readable($fileName);
     }
 
-    private function makeFilePath($name) {
-        return $this->folder . \APPID . '_' . $this->prefix . '_' . $name;
+    public function _delete($key)
+    {
+        $fileName = $this->makeFilePath($key);
+        return unlink($fileName);
+    }
+
+    private function makeFilePath($key) {
+        return $this->folder . \APPID . '_' . $this->prefix . '_' . $key;
     }
 }
