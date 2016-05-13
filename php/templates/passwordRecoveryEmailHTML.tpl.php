@@ -11,6 +11,7 @@ function passwordRecoveryEmailHTML($siteName, $username, $recoveryURL) {
     <p>
         A password recovery request was submitted on behalf of your user ${username}.
         Follow the link below to reset your password:
+        <br />
         <a href="{$recoveryURL}">{$recoveryURL}</a>
     </p>
     

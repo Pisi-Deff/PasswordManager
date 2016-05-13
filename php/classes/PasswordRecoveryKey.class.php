@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../3rd_party/random_compat/lib/random.php';
+require_once dirname(__DIR__) . '/../3rd_party/random_compat/lib/random.php';
 
 class PasswordRecoveryKey {
     protected $key;
@@ -102,7 +102,7 @@ class PasswordRecoveryKey {
         $length, $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_')
     {
         $string = '';
-        $max = mb_strlen($chars, '8bit') - 1;
+        $max = strlen($chars) - 1;
         for ($i = 0; $i <= $length; $i++) {
             $string .= $chars[random_int(0, $max)];
         }

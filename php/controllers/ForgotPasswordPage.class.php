@@ -2,7 +2,7 @@
 
 require_once dirname(__DIR__) . '/templates/errorPage.tpl.php';
 require_once dirname(__DIR__) . '/templates/forgotPasswordPage.tpl.php';
-require_once dirname(__DIR__) . '/templates/forgotPasswordPageMailSent.tpl.php';
+require_once dirname(__DIR__) . '/templates/forgotPasswordMailSentMessage.tpl.php';
 require_once dirname(__DIR__) . '/templates/passwordRecoveryEmailSubject.tpl.php';
 require_once dirname(__DIR__) . '/templates/passwordRecoveryEmailText.tpl.php';
 require_once dirname(__DIR__) . '/templates/passwordRecoveryEmailHTML.tpl.php';
@@ -36,11 +36,14 @@ class ForgotPasswordPage extends Page {
 
     public function render() {
         // TODO: add limit checking/logging
-        if ($this->post['username']) {
+        if (isset($this->post['username'])) {
             $username = trim($this->post['username']);
             $email = $this->dbActions->getUserEmail($username);
 
-            $recoveryURL = $this->generateRecoveryURL($username, $_SERVER['REMOTE_ADDR']);
+            $recoveryKey = PasswordRecoveryKey::create(
+                $this->recoveryKeyStorage, $username, $_SERVER['REMOTE_ADDR']);
+            $recoveryURL = $this->generateRecoveryURL($recoveryKey);
+            $recoveryKey->save($this->recoveryKeyStorage);
 
             $settings = array(
                 'from' => $this->cfg['email_mailerAddress'],
@@ -55,7 +58,7 @@ class ForgotPasswordPage extends Page {
             $mail = new Email($settings);
 
             if ($this->mailer->send($mail)) {
-                return \tpl\forgotPasswordPageMailSent();
+                return \tpl\forgotPasswordMailSentMessage();
             } else {
                 // TODO: better msg
                 return \tpl\errorPage('Failed to send email.');
@@ -65,9 +68,11 @@ class ForgotPasswordPage extends Page {
         return \tpl\forgotPasswordPage();
     }
 
-    private function generateRecoveryURL($username, $ip) {
-        $recoveryKey = PasswordRecoveryKey::create($this->recoveryKeyStorage, $username, $ip);
-
+    /**
+     * @param PasswordRecoveryKey $recoveryKey
+     * @return string
+     */
+    private function generateRecoveryURL($recoveryKey) {
         $usingHTTPS =
             (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
             || $_SERVER['SERVER_PORT'] == 443;

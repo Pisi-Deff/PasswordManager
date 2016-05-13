@@ -11,7 +11,7 @@ function forgotPasswordPage() {
 
     $centerContent = <<<ENDTPL
     
-    <form method="POST">
+    <form method="POST" autocomplete="off">
         <div>
             This form can be used to reset your password if you've lost it.
             Enter your username in the field below.

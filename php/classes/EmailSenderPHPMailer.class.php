@@ -1,7 +1,6 @@
 <?php
 
-require_once './EmailSender.class.php';
-require_once '../../3rd_party/PHPMailer/PHPMailerAutoload.php';
+require_once dirname(__DIR__) . '/../3rd_party/PHPMailer/PHPMailerAutoload.php';
 
 class EmailSenderPHPMailer extends EmailSender {
 
