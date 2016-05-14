@@ -12,7 +12,7 @@ function resetPasswordPage($username) {
     
     $centerContent = <<<ENDTPL
     
-    <form method="POST">
+    <form method="POST" autocomplete="off">
         <span>By filling out this form, you will be able to reset your password to a new one.</span>
         <br />
         

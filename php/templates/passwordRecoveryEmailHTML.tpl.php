@@ -21,7 +21,7 @@ function passwordRecoveryEmailHTML($siteName, $username, $recoveryURL) {
     </p>
     
     <p>
-        Kind Regards,
+        Kind Regards,<br />
         {$siteName}
     </p>
     
