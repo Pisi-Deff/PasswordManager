@@ -135,9 +135,9 @@ $cfg['db_useHashedPasswordForFunctions'] = true;
 
 
 
-/**************************
- **** Password settings ***
- **************************/
+/*********************************
+ **** Password strength rules ****
+ *********************************/
 
 /**
  *
@@ -153,6 +153,27 @@ $cfg['pw_maxLength'] = 0;
  *
  */
 $cfg['pw_minEntropyBits'] = 80;
+
+/**
+ *
+ */
+$cfg['pw_strongEntropyBits'] = 100;
+
+
+
+/***********************************
+ **** Password generation rules ****
+ ***********************************/
+
+/**
+ *
+ */
+$cfg['pwgen_dictionaryFilePath'] = '/home/sitename/dictionary.txt';
+
+/**
+ *
+ */
+$cfg['pwgen_wordsNumber'] = 4;
 
 
 

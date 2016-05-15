@@ -3,7 +3,7 @@
 require_once dirname(__DIR__) . '/templates/resetPasswordPage.tpl.php';
 require_once dirname(__DIR__) . '/templates/passwordSuccessfullyChangedMessage.tpl.php';
 
-define('RECOVERY_KEY_MAX_AGE', 1 * 24 * 60 * 60); // 1 day
+define('RECOVERY_KEY_MAX_AGE', 1 * 60 * 60); // 1 hour
 
 class ResetPasswordPage extends PageWithNewPasswords {
 
@@ -22,7 +22,7 @@ class ResetPasswordPage extends PageWithNewPasswords {
         session_start();
 
         if (!isset($this->get['key'])) {
-            return \tpl\errorPage('Invalid password recovery key.'); // TODO: better error
+            return \tpl\errorPage('Invalid password recovery key.');
         }
 
         $sessionKey = \APPID . '_' . $this->cfg['instanceIdentifier'] . '_recoveryKey';
@@ -40,18 +40,18 @@ class ResetPasswordPage extends PageWithNewPasswords {
             || $recoveryKey->getTimestamp() + RECOVERY_KEY_MAX_AGE < time()) {
 
             $_SESSION[$sessionKey] = null;
-            
-            return \tpl\errorPage('Password recovery key has expired or is invalid.'); // TODO: better error
+            return \tpl\errorPage('Password recovery key has expired or is invalid.');
         }
 
-        if ($recoveryKey->getIp() !== $_SERVER['REMOTE_ADDR']) { // TODO: have this as a config setting
+        if ($recoveryKey->getIp() !== $_SERVER['REMOTE_ADDR']) {
             $_SESSION[$sessionKey] = null;
             
             return \tpl\errorPage('Current IP does not match the one that the password recovery request was initiated with.'); // TODO: better error
         }
 
         if ($this->isFormInputPresent()) {
-            if ($this->isNewPasswordSuitable()) {
+            $pwErrors = $this->isNewPasswordSuitable();
+            if (!count($pwErrors)) {
                 $newPass = $this->getNewPass();
                 $success = $this->dbActions->changeUserPassword($recoveryKey->getUsername(), $newPass);
                 if ($success) {
@@ -60,14 +60,15 @@ class ResetPasswordPage extends PageWithNewPasswords {
                     
                     return \tpl\passwordSuccessfullyChangedMessage();
                 } else {
-                    // TODO: error
+                    return \tpl\errorPage('New password does not match password strength rules.');
                 }
             }
         } else {
             $_SESSION[$sessionKey] = $recoveryKey;
         }
 
-        return \tpl\resetPasswordPage($recoveryKey->getUsername());
+        return \tpl\resetPasswordPage($recoveryKey->getUsername(), $this->cfg['pw_minLength'],
+            $this->cfg['pw_maxLength'], $this->cfg['pw_minEntropyBits']);
     }
 
     private function isFormInputPresent() {

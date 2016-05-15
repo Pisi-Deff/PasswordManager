@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__DIR__) . '/templates/changePasswordPage.tpl.php';
+require_once dirname(__DIR__) . '/templates/errorPage.tpl.php';
 
 class ChangePasswordPage extends PageWithNewPasswords {
     public function render() {
@@ -10,23 +11,25 @@ class ChangePasswordPage extends PageWithNewPasswords {
             $password = trim($this->post['password']);
 
             if ($this->dbActions->authenticateUser($username, $password)) {
-                if ($this->isNewPasswordSuitable()) {
+                $pwErrors = $this->isNewPasswordSuitable();
+                if (!count($pwErrors)) {
                     $newPass = $this->getNewPass();
                     $success = $this->dbActions->changeUserPassword($username, $newPass);
                     if ($success) {
                         return \tpl\passwordSuccessfullyChangedMessage();
                     } else {
-                        // TODO: error
+                        return \tpl\errorPage('Unable to change password');
                     }
                 } else {
-                    // TODO: error
+                    return \tpl\errorPage('New password does not match strength rules');
                 }
             } else {
-                // TODO: error
+                return \tpl\errorPage('Invalid username and/or current password');
             }
         }
         
-        return \tpl\changePasswordPage();
+        return \tpl\changePasswordPage($this->cfg['pw_minLength'],
+            $this->cfg['pw_maxLength'], $this->cfg['pw_minEntropyBits']);
     }
 
     private function isFormInputPresent() {

@@ -2,13 +2,12 @@
 namespace tpl;
 
 require_once('centerContent.tpl.php');
-require_once('textField.tpl.php');
 require_once('newPasswordFields.tpl.php');
 
-function resetPasswordPage($username) {
+function resetPasswordPage($username, $minLength, $maxLength, $minEntropy) {
     $title = 'Reset Password';
 
-    $newPassFields = newPasswordFields();
+    $newPassFields = newPasswordFields($minLength, $maxLength, $minEntropy);
     
     $centerContent = <<<ENDTPL
     

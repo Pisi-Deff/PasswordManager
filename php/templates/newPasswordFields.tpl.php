@@ -1,10 +1,19 @@
 <?php
 namespace tpl;
 
-function newPasswordFields() {
+require_once('passwordField.tpl.php');
 
-    $newPassField1 = textField("New password", "newpass1", "", "password");
-    $newPassField2 = textField("Repeat new password", "newpass2", "", "password");
+function newPasswordFields($minLength, $maxLength, $minEntropy) {
+
+    $newPassField1 = passwordField("New password", "newpass1");
+    $newPassField2 = passwordField("Repeat new password", "newpass2");
+
+    $passwordRules = passwordRule('new passwords match', 'match');
+    $passwordRules .= passwordRule('is at least ' . $minLength . ' characters long', 'tooShort');
+    if ($maxLength) {
+        $passwordRules .= passwordRule('is up to ' . $maxLength . ' characters long', 'tooLong');
+    }
+    $passwordRules .= passwordRule('has a strength of at least ' . $minEntropy . ' bits', 'lackingEntropy');
 
     return <<<ENDTPL
     
@@ -13,22 +22,37 @@ function newPasswordFields() {
             {$newPassField1}
             
             <div class="form-group">
-                <label class="control-label">Password strength:</label>
+                <label class="control-label">
+                    Strength:
+                    <strong>
+                        <span class="pwStrengthLabel pwStrengthLabelBad shown"
+                                data-strength="bad">Bad</span>
+                        <span class="pwStrengthLabel pwStrengthLabelOk"
+                                data-strength="min">Okay</span>
+                        <span class="pwStrengthLabel pwStrengthLabelGood"
+                                data-strength="strong">Good</span>
+                    </strong>
+                </label>
                 <br />
-                <strong>
-                    <span class="pwStrengthLabel pwStrengthLabelBad">Bad</span>
-                    <span class="pwStrengthLabel pwStrengthLabelOk">Okay</span>
-                    <span class="pwStrengthLabel pwStrengthLabelGood">Good</span>
-                </strong>
-                <span>(</span>
-                <span class="pwStrengthBits"></span>
-                <span> bits of entropy</span>
-                <span class="glyphicon glyphicon-question-sign"></span>
-                <span>)</span>
+                <small>
+                    <span class="pwStrengthBits">0</span>
+                    <span> estimated bits of entropy</span>
+                    <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip"
+                        data-placement="top" title="An estimation of entropy based on Shannon entropy"></span>
+                </small>
+                <small class="dictionaryEntropyBlock">
+                    <span class="pwStrengthBitsDictionary">0</span>
+                    <span> bits of entropy against dictionary attack </span>
+                    <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip"
+                        data-placement="top"
+                        title="Based on the size of the dictionary and the number of words picked"></span>
+                </small>
             </div>
             
+            
             <div class="form-group text-center">
-                <button type="button" class="btn btn-default">Generate strong password</button>
+                <button type="button" class="genPassBtn btn btn-default"
+                    data-loading-text="Generating...">Generate strong password</button>
             </div>
             
             {$newPassField2}
@@ -38,11 +62,23 @@ function newPasswordFields() {
                 <h4>The new password must match the following rules:</h4>
                 
                 <div class="pwStrengthItems">
-                    <span class="text-danger">X is at least 10 characters long</span>
+                    {$passwordRules}
                 </div>
             </div>
         </div>
     </div>
     
+ENDTPL;
+}
+
+function passwordRule($text, $id) {
+    return <<<ENDTPL
+
+    <div class="pwStrengthItem invalid" data-id="{$id}">
+        <span class="glyphicon glyphicon-remove"></span>
+        <span class="glyphicon glyphicon-ok"></span>
+        <span>{$text}</span>
+    </div>
+
 ENDTPL;
 }

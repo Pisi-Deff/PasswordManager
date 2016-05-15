@@ -5,13 +5,13 @@ require_once('centerContent.tpl.php');
 require_once('textField.tpl.php');
 require_once('newPasswordFields.tpl.php');
 
-function changePasswordPage() {
+function changePasswordPage($minLength, $maxLength, $minEntropy) {
     $title = 'Change Password';
 
-    $userField = textField("Username", "username", "");
+    $userField = textField("Username", "username");
     $passField = textField("Current password", "password", "", "password");
 
-    $newPassFields = newPasswordFields();
+    $newPassFields = newPasswordFields($minLength, $maxLength, $minEntropy);
     
     $centerContent = <<<ENDTPL
     
