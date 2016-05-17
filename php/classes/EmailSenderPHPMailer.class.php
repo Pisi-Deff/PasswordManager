@@ -41,7 +41,7 @@ class EmailSenderPHPMailer extends EmailSender {
         $mailer->AltBody = $mail->getText();
 
         if (!$mailer->send()) {
-            // TODO: log error
+            Logger::getInstance()->logEmailError($mailer->ErrorInfo);
             return 'Mailer Error: ' . $mailer->ErrorInfo;
         }
 

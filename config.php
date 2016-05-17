@@ -25,9 +25,17 @@ $cfg = array();
 $cfg['instanceIdentifier'] = 'sitename';
 
 /**
- *
+ * The name of the system, the users and passwords of which this application deals with.
+ * Used for example in sent emails and titles of pages.
+ * 
+ * Example: 'Site Name'
  */
 $cfg['applicationName'] = 'Site Name';
+
+/**
+ *
+ */
+$cfg['logsFolder'] = '/home/sitename/logs';
 
 
 

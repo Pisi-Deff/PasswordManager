@@ -16,6 +16,7 @@ class ChangePasswordPage extends PageWithNewPasswords {
                     $newPass = $this->getNewPass();
                     $success = $this->dbActions->changeUserPassword($username, $newPass);
                     if ($success) {
+                        Logger::getInstance()->logPasswordChanged($username);
                         return \tpl\passwordSuccessfullyChangedMessage();
                     } else {
                         return \tpl\errorPage('Unable to change password');
@@ -24,6 +25,7 @@ class ChangePasswordPage extends PageWithNewPasswords {
                     return \tpl\errorPage('New password does not match strength rules');
                 }
             } else {
+                Logger::getInstance()->logPasswordChangeFailed($username);
                 return \tpl\errorPage('Invalid username and/or current password');
             }
         }

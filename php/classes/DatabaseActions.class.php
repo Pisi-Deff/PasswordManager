@@ -29,10 +29,15 @@ class DatabaseActions {
 
 
     public function getUserEmail($username) {
-        if ($this->cfg['db_useDBFunctions'] === true) {
-            return $this->getUserEmailViaFunction($username);
+        try {
+            if ($this->cfg['db_useDBFunctions'] === true) {
+                return $this->getUserEmailViaFunction($username);
+            }
+            return $this->getUserEmailDirectly($username);
+        } catch (\Exception $e) {
+            Logger::getInstance()->logDatabaseError($e->getMessage());
+            throw $e;
         }
-        return $this->getUserEmailDirectly($username);
     }
 
     private function getUserEmailDirectly($username) {
@@ -40,8 +45,7 @@ class DatabaseActions {
             && self::stringHasValue($this->cfg['db_emailColumn'])
             && self::stringHasValue($this->cfg['db_usernameColumn'])
         )) {
-            // TODO: raise error
-            return null;
+            throw new Exception('Missing database configuration.');
         }
 
         $stmt = $this->getConnection()->createQueryBuilder()
@@ -57,11 +61,11 @@ class DatabaseActions {
 
     private function getUserEmailViaFunction($username) {
         if (!self::stringHasValue($this->cfg['db_getUserEmailFunction'])) {
-            // TODO: raise error
-            return null;
+            throw new Exception('Missing database configuration.');
         }
 
-        $sql = 'SELECT ' . $this->cfg['db_getUserEmailFunction'] . '(:username) FROM DUAL';
+        $sql = 'SELECT ' . $this->cfg['db_getUserEmailFunction'] . '(:username)';
+        $sql = $this->addDualIfOracle($sql);
         $stmt = $this->getConnection()->executeQuery(
             $sql, array('username' => $username), array(PDO::PARAM_STR));
 
@@ -71,10 +75,15 @@ class DatabaseActions {
 
 
     public function authenticateUser($username, $password) {
-        if ($this->cfg['db_useDBFunctions'] === true) {
-            return $this->authenticateUserViaFunction($username, $password);
+        try {
+            if ($this->cfg['db_useDBFunctions'] === true) {
+                return $this->authenticateUserViaFunction($username, $password);
+            }
+            return $this->authenticateUserDirectly($username, $password);
+        } catch (\Exception $e) {
+            Logger::getInstance()->logDatabaseError($e->getMessage());
+            throw $e;
         }
-        return $this->authenticateUserDirectly($username, $password);
     }
 
     private function authenticateUserDirectly($username, $password) {
@@ -82,8 +91,7 @@ class DatabaseActions {
             && self::stringHasValue($this->cfg['db_passwordColumn'])
             && self::stringHasValue($this->cfg['db_usernameColumn'])
         )) {
-            // TODO: raise error
-            return false;
+            throw new Exception('Missing database configuration.');
         }
 
         $stmt = $this->getConnection()->createQueryBuilder()
@@ -93,22 +101,21 @@ class DatabaseActions {
             ->setParameter(0, $username)
             ->execute();
         $hash = $stmt->fetchColumn();
-        var_dump($hash);
 
         return $this->pwHasher->checkPassword($password, $hash);
     }
 
     private function authenticateUserViaFunction($username, $password) {
         if (!self::stringHasValue($this->cfg['db_userAuthenticateFunction'])) {
-            // TODO: raise error
-            return false;
+            throw new Exception('Missing database configuration.');
         }
 
         if ($this->cfg['db_useHashedPasswordForFunctions'] === true) {
             $password = $this->pwHasher->hashPassword($password);
         }
 
-        $sql = 'SELECT ' . $this->cfg['db_userAuthenticateFunction'] . '(:username, :password) FROM DUAL';
+        $sql = 'SELECT ' . $this->cfg['db_userAuthenticateFunction'] . '(:username, :password)';
+        $sql = $this->addDualIfOracle($sql);
         $stmt = $this->getConnection()->executeQuery(
             $sql, array(
                 'username' => $username,
@@ -124,10 +131,15 @@ class DatabaseActions {
 
 
     public function changeUserPassword($username, $newPassword) {
-        if ($this->cfg['db_useDBFunctions'] === true) {
-            return $this->changeUserPasswordViaFunction($username, $newPassword);
+        try {
+            if ($this->cfg['db_useDBFunctions'] === true) {
+                return $this->changeUserPasswordViaFunction($username, $newPassword);
+            }
+            return $this->changeUserPasswordDirectly($username, $newPassword);
+        } catch (\Exception $e) {
+            Logger::getInstance()->logDatabaseError($e->getMessage());
+            throw $e;
         }
-        return $this->changeUserPasswordDirectly($username, $newPassword);
     }
 
     private function changeUserPasswordDirectly($username, $newPassword) {
@@ -135,8 +147,7 @@ class DatabaseActions {
                 && self::stringHasValue($this->cfg['db_passwordColumn'])
                 && self::stringHasValue($this->cfg['db_usernameColumn'])
             )) {
-            // TODO: raise error
-            return false;
+            throw new Exception('Missing database configuration.');
         }
 
         $newHash = $this->pwHasher->hashPassword($newPassword);
@@ -154,15 +165,15 @@ class DatabaseActions {
 
     private function changeUserPasswordViaFunction($username, $newPassword) {
         if (!self::stringHasValue($this->cfg['db_changePasswordFunction'])) {
-            // TODO: raise error
-            return false;
+            throw new Exception('Missing database configuration.');
         }
 
         if ($this->cfg['db_useHashedPasswordForFunctions'] === true) {
             $newPassword = $this->pwHasher->hashPassword($newPassword);
         }
 
-        $sql = 'SELECT ' . $this->cfg['db_changePasswordFunction'] . '(:username, :password) FROM DUAL';
+        $sql = 'SELECT ' . $this->cfg['db_changePasswordFunction'] . '(:username, :password)';
+        $sql = $this->addDualIfOracle($sql);
         $stmt = $this->getConnection()->executeQuery(
             $sql, array(
             'username' => $username,
@@ -178,17 +189,30 @@ class DatabaseActions {
 
 
     public function raisePasswordChangedEvent($username) {
-        if (!self::stringHasValue($this->cfg['db_passwordChangedEventFunction'])) {
-            return;
-        }
+        try {
+            if (!self::stringHasValue($this->cfg['db_passwordChangedEventFunction'])) {
+                return;
+            }
 
-        $sql = 'SELECT ' . $this->cfg['db_passwordChangedEventFunction'] . '(:username) FROM DUAL';
-        $this->getConnection()->executeQuery(
-            $sql, array(
-            'username' => $username
-        ), array(
-            'username' => PDO::PARAM_STR
-        ));
+            $sql = 'SELECT ' . $this->cfg['db_passwordChangedEventFunction'] . '(:username)';
+            $sql = $this->addDualIfOracle($sql);
+            $this->getConnection()->executeQuery(
+                $sql, array(
+                'username' => $username
+            ), array(
+                'username' => PDO::PARAM_STR
+            ));
+        } catch (\Exception $e) {
+            Logger::getInstance()->logDatabaseError($e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function addDualIfOracle($sql) {
+        if ($this->cfg['db_type'] === 'oracle') {
+            return $sql . ' FROM DUAL';
+        }
+        return $sql;
     }
 
     private static function stringHasValue($str) {

@@ -40,12 +40,15 @@ class ResetPasswordPage extends PageWithNewPasswords {
             || $recoveryKey->getTimestamp() + RECOVERY_KEY_MAX_AGE < time()) {
 
             $_SESSION[$sessionKey] = null;
+
+            Logger::getInstance()->logPasswordResetInvalidKey();
             return \tpl\errorPage('Password recovery key has expired or is invalid.');
         }
 
         if ($recoveryKey->getIp() !== $_SERVER['REMOTE_ADDR']) {
             $_SESSION[$sessionKey] = null;
-            
+
+            Logger::getInstance()->logPasswordResetInvalidKey();
             return \tpl\errorPage('Current IP does not match the one that the password recovery request was initiated with.'); // TODO: better error
         }
 
@@ -57,7 +60,8 @@ class ResetPasswordPage extends PageWithNewPasswords {
                 if ($success) {
                     $recoveryKey->delete($this->recoveryKeyStorage);
                     $_SESSION[$sessionKey] = null;
-                    
+
+                    Logger::getInstance()->logPasswordResetFinished($recoveryKey->getUsername());
                     return \tpl\passwordSuccessfullyChangedMessage();
                 } else {
                     return \tpl\errorPage('New password does not match password strength rules.');

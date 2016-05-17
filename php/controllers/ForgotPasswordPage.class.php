@@ -35,7 +35,7 @@ class ForgotPasswordPage extends Page {
     }
 
     public function render() {
-        // TODO: add limit checking/logging
+        // TODO: add limit checking
         if (isset($this->post['username'])) {
             $username = trim($this->post['username']);
             $email = $this->dbActions->getUserEmail($username);
@@ -58,9 +58,9 @@ class ForgotPasswordPage extends Page {
             $mail = new Email($settings);
 
             if ($this->mailer->send($mail)) {
+                Logger::getInstance()->logPasswordResetInit($username);
                 return \tpl\forgotPasswordMailSentMessage();
             } else {
-                // TODO: better msg
                 return \tpl\errorPage('Failed to send email.');
             }
         }

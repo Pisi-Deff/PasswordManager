@@ -12,6 +12,8 @@ define('VERSION', '1.0');
 
 require_once './configlink.php';
 
+@date_default_timezone_set(date_default_timezone_get());
+
 spl_autoload_register(function ($class) {
     $filenames = array(
         'php/classes/' . $class . '.class.php',
@@ -25,9 +27,18 @@ spl_autoload_register(function ($class) {
     }
 });
 
+Logger::init($cfg);
 $pageFactory = new PageFactory('ChangePasswordPage');
-
 $dbActions = new DatabaseActions($cfg);
+
+function error_handler($e) {
+    Logger::getInstance()->logUnhandledException($e);
+    error_log($e);
+
+    require_once 'php/templates/errorPage.tpl.php';
+    echo \tpl\errorPage('An unexpected error occurred. Please contact administration');
+}
+set_exception_handler("error_handler");
 
 $page = $pageFactory->getPage($_GET, $_POST, $cfg, $dbActions);
 echo $page->render();
