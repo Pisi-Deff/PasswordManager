@@ -182,9 +182,9 @@ class DatabaseActions {
             'username' => PDO::PARAM_STR,
             'password' => PDO::PARAM_STR
         ));
-        $result = $stmt->fetchColumn();
+        $stmt->fetchColumn();
 
-        return $result;
+        return true;
     }
 
 

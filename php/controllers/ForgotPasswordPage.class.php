@@ -40,28 +40,32 @@ class ForgotPasswordPage extends Page {
             $username = trim($this->post['username']);
             $email = $this->dbActions->getUserEmail($username);
 
-            $recoveryKey = PasswordRecoveryKey::create(
-                $this->recoveryKeyStorage, $username, $_SERVER['REMOTE_ADDR']);
-            $recoveryURL = $this->generateRecoveryURL($recoveryKey);
-            $recoveryKey->save($this->recoveryKeyStorage);
+            if ($email) {
+                $recoveryKey = PasswordRecoveryKey::create(
+                    $this->recoveryKeyStorage, $username, $_SERVER['REMOTE_ADDR']);
+                $recoveryURL = $this->generateRecoveryURL($recoveryKey);
+                $recoveryKey->save($this->recoveryKeyStorage);
 
-            $settings = array(
-                'from' => $this->cfg['email_mailerAddress'],
-                'fromName' => $this->cfg['applicationName'],
-                'to' => $email,
-                'toName' => $username,
+                $settings = array(
+                    'from' => $this->cfg['email_mailerAddress'],
+                    'fromName' => $this->cfg['applicationName'],
+                    'to' => $email,
+                    'toName' => $username,
 
-                'subject' => \tpl\passwordRecoveryEmailSubject($this->cfg['applicationName'], $username),
-                'html' => \tpl\passwordRecoveryEmailHTML($this->cfg['applicationName'], $username, $recoveryURL),
-                'text' => \tpl\passwordRecoveryEmailText($this->cfg['applicationName'], $username, $recoveryURL)
-            );
-            $mail = new Email($settings);
+                    'subject' => \tpl\passwordRecoveryEmailSubject($this->cfg['applicationName'], $username),
+                    'html' => \tpl\passwordRecoveryEmailHTML($this->cfg['applicationName'], $username, $recoveryURL),
+                    'text' => \tpl\passwordRecoveryEmailText($this->cfg['applicationName'], $username, $recoveryURL)
+                );
+                $mail = new Email($settings);
 
-            if ($this->mailer->send($mail)) {
-                Logger::getInstance()->logPasswordResetInit($username);
-                return \tpl\forgotPasswordMailSentMessage();
+                if ($this->mailer->send($mail)) {
+                    Logger::getInstance()->logPasswordResetInit($username);
+                    return \tpl\forgotPasswordMailSentMessage();
+                } else {
+                    return \tpl\errorPage('Failed to send email.');
+                }
             } else {
-                return \tpl\errorPage('Failed to send email.');
+                return \tpl\errorPage('Unable to find user.');
             }
         }
 
