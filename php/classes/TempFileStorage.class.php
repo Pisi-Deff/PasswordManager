@@ -24,9 +24,12 @@ class TempFileStorage extends DataStorage {
 
     public function _read($key) {
         $fileName = $this->makeFilePath($key);
-        $content = file_get_contents($fileName);
-        if ($content !== false && strlen($content) > 0) {
-            return json_decode($content, true);
+        
+        if (file_exists($fileName)) {
+            $content = file_get_contents($fileName);
+            if ($content !== false && strlen($content) > 0) {
+                return json_decode($content, true);
+            }
         }
 
         return null;
