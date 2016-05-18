@@ -3,9 +3,16 @@
 ##### A Standalone Self Service Web Application for Changing Passwords in Existing Applications
 
 Keep getting requests from users to reset their password because they forgot them?
+
 Have an application that does not have password reset functionality?
 
 **Password Manager** may be the solution!
+
+## Features
+ * Lets users change and reset their passwords without the involvement of administrators.
+ * Users have to go to a link sent to their email address to reset their forgotten passwords.
+ * Generate strong passwords with the press of a button.
+ * Enforce minimal password strength for new passwords.
 
 # Requirements
 
