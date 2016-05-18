@@ -1,7 +1,7 @@
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
 
-    if (document.referrer !== "") {
+    if (history.length > 1 && document.referrer !== "") {
         $('.backBtn').addClass('show');
     }
 
@@ -31,7 +31,7 @@ $(function () {
                 // TODO: error
             });
     });
-    if ($newPassField1.val().length) {
+    if ($newPassField1.length && $newPassField1.val().length) {
         $newPassField1.change();
     }
 
