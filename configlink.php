@@ -5,6 +5,6 @@ if (!defined('PASSWORD_MANAGER')){
 }
 
 /**
- *
+ * Fill the string in the following line with a path to the config file.
  */
 require_once './config.php';
