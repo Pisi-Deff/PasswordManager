@@ -2,6 +2,7 @@
 
 require_once dirname(__DIR__) . '/templates/resetPasswordPage.tpl.php';
 require_once dirname(__DIR__) . '/templates/passwordSuccessfullyChangedMessage.tpl.php';
+require_once dirname(__DIR__) . '/templates/errorPage.tpl.php';
 
 define('RECOVERY_KEY_MAX_AGE', 1 * 60 * 60); // 1 hour
 
