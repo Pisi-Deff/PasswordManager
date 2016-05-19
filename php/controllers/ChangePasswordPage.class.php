@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__DIR__) . '/templates/changePasswordPage.tpl.php';
+require_once dirname(__DIR__) . '/templates/passwordSuccessfullyChangedMessage.tpl.php';
 require_once dirname(__DIR__) . '/templates/errorPage.tpl.php';
 
 class ChangePasswordPage extends PageWithNewPasswords {
