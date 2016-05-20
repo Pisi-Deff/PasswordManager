@@ -120,7 +120,9 @@ $cfg['db_passwordColumn'] = 'password';
  * or if functions are used (db_useDBFunctions is true) and the parameter
  * db_useHashedPasswordForFunctions is true.
  *
- * Supported values: 'bcrypt', 'sha256', 'sha512'
+ * Use null for horrible ancient legacy systems that don't crypt passwords, which is horrible.
+ *
+ * Supported values: 'bcrypt', 'sha256', 'sha512', null
  */
 $cfg['db_passwordHashMethod'] = 'bcrypt';
 

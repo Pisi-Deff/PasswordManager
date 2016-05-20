@@ -7,7 +7,7 @@ define('HASH_SHA256_ROUNDS', 200000);
 define('HASH_SHA512_ROUNDS', 200000);
 
 class PasswordHasher {
-    private static $supportedAlgorithms = array('bcrypt', 'sha256', 'sha512');
+    private static $supportedAlgorithms = array('bcrypt', 'sha256', 'sha512', null);
 
     protected $hashMethod;
 
@@ -38,11 +38,19 @@ class PasswordHasher {
      * @return bool
      */
     public function checkPassword($password, $hashString) {
+        if ($this->hashMethod === null) {
+            return hash_equals($password, $hashString);
+        }
+
         $newHash = crypt($password, $hashString);
         return hash_equals($hashString, $newHash);
     }
 
     public function hashPassword($password) {
+        if ($this->hashMethod === null) {
+            return $password;
+        }
+
         return crypt($password, $this->generateSaltString());
     }
 
