@@ -41,6 +41,10 @@ class Logger {
         $this->log('Password reset initiated for user "' . $username . '".');
     }
 
+    public function logPasswordResetInitFailed($username) {
+        $this->log('Password reset attempted for unknown user "' . $username . '".');
+    }
+
     public function logPasswordResetFinished($username) {
         $this->log('Password reset successfully finished for user "' . $username . '".');
     }

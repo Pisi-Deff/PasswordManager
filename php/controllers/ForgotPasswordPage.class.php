@@ -65,7 +65,9 @@ class ForgotPasswordPage extends Page {
                     return \tpl\errorPage('Failed to send email.');
                 }
             } else {
-                return \tpl\errorPage('Unable to find user.');
+                Logger::getInstance()->logPasswordResetInitFailed($username);
+                // user not found... but may as well lie to an attacker
+                return \tpl\forgotPasswordMailSentMessage();
             }
         }
 
