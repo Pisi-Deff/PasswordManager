@@ -16,6 +16,10 @@ function passwordRecoveryEmailHTML($siteName, $username, $recoveryURL) {
     </p>
     
     <p>
+        Please note that this link is only valid for 1 hour.
+    </p>
+    
+    <p>
         If you did not submit this request, please ignore this email.
         Unless you follow the above link and set a new password, your current password will not be changed.
     </p>
