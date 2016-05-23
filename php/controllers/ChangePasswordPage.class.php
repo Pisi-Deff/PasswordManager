@@ -11,9 +11,9 @@ class ChangePasswordPage extends PageWithNewPasswords {
             $username = trim($this->post['username']);
             $password = trim($this->post['password']);
 
-            if ($this->dbActions->authenticateUser($username, $password)) {
-                $pwErrors = $this->isNewPasswordSuitable();
-                if (!count($pwErrors)) {
+            $pwErrors = $this->isNewPasswordSuitable();
+            if (!count($pwErrors)) {
+                if ($this->dbActions->authenticateUser($username, $password)) {
                     $newPass = $this->getNewPass();
                     $success = $this->dbActions->changeUserPassword($username, $newPass);
                     if ($success) {
@@ -23,11 +23,12 @@ class ChangePasswordPage extends PageWithNewPasswords {
                         return \tpl\errorPage('Unable to change password');
                     }
                 } else {
-                    return \tpl\errorPage('New password does not match strength rules');
+                    Logger::getInstance()->logPasswordChangeFailed($username);
+                    // lie to potential attacker
+                    return \tpl\passwordSuccessfullyChangedMessage();
                 }
             } else {
-                Logger::getInstance()->logPasswordChangeFailed($username);
-                return \tpl\errorPage('Invalid username and/or current password');
+                return \tpl\errorPage('New password does not match strength rules');
             }
         }
         
