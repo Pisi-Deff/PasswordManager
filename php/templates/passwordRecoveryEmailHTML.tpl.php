@@ -25,6 +25,10 @@ function passwordRecoveryEmailHTML($siteName, $username, $recoveryURL) {
     </p>
     
     <p>
+        NOTE: This is an automated e-mail. Please do not reply to it.
+    </p>
+    
+    <p>
         Kind Regards,<br />
         {$siteName}
     </p>
