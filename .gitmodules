@@ -1,7 +1,0 @@
-[submodule "3rd_party/PHPMailer"]
-	path = 3rd_party/PHPMailer
-	url = https://github.com/PHPMailer/PHPMailer.git
-	branch = 5.2-stable
-[submodule "3rd_party/random_compat"]
-	path = 3rd_party/random_compat
-	url = https://github.com/paragonie/random_compat.git
