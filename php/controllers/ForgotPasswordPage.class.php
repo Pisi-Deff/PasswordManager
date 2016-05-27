@@ -38,6 +38,11 @@ class ForgotPasswordPage extends Page {
         // TODO: add limit checking
         if (isset($this->post['username'])) {
             $username = trim($this->post['username']);
+
+            if (!(strlen($username))) {
+                return \tpl\errorPage('Please enter your username');
+            }
+
             $email = $this->dbActions->getUserEmail($username);
 
             if ($email) {

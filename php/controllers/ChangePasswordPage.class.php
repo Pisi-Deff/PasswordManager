@@ -11,6 +11,10 @@ class ChangePasswordPage extends PageWithNewPasswords {
             $username = trim($this->post['username']);
             $password = trim($this->post['password']);
 
+            if (!(strlen($username) && strlen($password))) {
+                return \tpl\errorPage('Please enter your username and current password');
+            }
+
             $pwErrors = $this->isNewPasswordSuitable();
             if (!count($pwErrors)) {
                 if ($this->dbActions->authenticateUser($username, $password)) {
