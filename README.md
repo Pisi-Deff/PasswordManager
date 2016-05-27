@@ -34,6 +34,7 @@ Have an application that does not have password reset functionality?
 * Download the latest version of the application from the GitHub repository.
 * Fill the [config.php](config.php) file with your configuration details.
 * If using functions for database interactions, create them in the database.
+ * [Definition examples of the functions used by the applications can be found here.](db_function_examples.md)
 * Upload the application's files to the webserver.
 * Optional but suggested: move the [config.php](config.php) file outside of the webserver's public directory and store the absolute filesystem path to it in the [configlink.php](configlink.php) file.
 
