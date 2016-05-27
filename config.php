@@ -50,7 +50,7 @@ $cfg['logsFolder'] = '/home/sitename/logs';
 /**
  * The type of the database system.
  *
- * Allowed values: 'postgresql', 'oracle', 'mssql'
+ * Allowed values: 'postgresql', 'oracle', 'mssql', 'mysql'
  * Note: Oracle and MSSQL support is currently untested.
  */
 $cfg['db_type'] = 'postgresql';

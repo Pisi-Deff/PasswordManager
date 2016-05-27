@@ -27,7 +27,7 @@ Have an application that does not have password reset functionality?
  * pdo_mysql for MySQL/MariaBD
 * Access to a mail server for sending emails.
 
-Note: The application has currently only been tested with PostgreSQL databases. In theory, it should work with MSSQL/Oracle/MySQL as well, as their simple select/update and function syntaxes are similar. I would appreciate it if anyone can confirm that it does.
+**Note**: The application has currently only been tested with PostgreSQL & MySQL databases. In theory, it should work with MSSQL/Oracle as well, as their simple select/update and function syntaxes are similar. I would appreciate it if anyone can confirm that it does.
 
 # Installation
 
@@ -37,6 +37,6 @@ Note: The application has currently only been tested with PostgreSQL databases. 
 * Upload the application's files to the webserver.
 * Optional but suggested: move the [config.php](config.php) file outside of the webserver's public directory and store the absolute filesystem path to it in the [configlink.php](configlink.php) file.
 
-# License
+# [License](LICENSE)
 
 Password Manager is released under the MIT license.
