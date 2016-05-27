@@ -118,7 +118,7 @@ $cfg['db_passwordColumn'] = 'password';
  *
  * Hashing will only be done if data is accessed directly (db_useDBFunctions is false)
  * or if functions are used (db_useDBFunctions is true) and the parameter
- * db_useHashedPasswordForFunctions is true.
+ * db_doPasswordHashingInDatabaseForFunctions is false.
  *
  * Use null for horrible ancient legacy systems that don't crypt passwords, which is horrible.
  *
@@ -130,6 +130,7 @@ $cfg['db_passwordHashMethod'] = 'bcrypt';
  * Name of the function in the database, which is called when a password has been changed.
  * Useful if after changing a password some logic needs to be executed on the database
  * server. For example to wipe user sessions.
+ *
  * If the function is accessible via a schema, then add the schema name in the front of the value
  * and separate it from the table name with a period (.).
  *
@@ -145,7 +146,8 @@ $cfg['db_passwordChangedEventFunction'] = null;
  *   - db_getUserEmailFunction
  *   - db_changePasswordFunction
  *   - db_userAuthenticateFunction
- *   - db_useHashedPasswordForFunctions
+ *   - db_getUserPasswordHashFunction
+ *   - db_doPasswordHashingInDatabaseForFunctions
  * 
  * If set to false, the values of the following parameters will be used
  * for exchanging data with the database:
@@ -160,6 +162,7 @@ $cfg['db_useDBFunctions'] = false;
  * Name of the function in the database, which is called to retrieve a user's email address.
  * It also acts as a way to check if a user with the provided username exists. If the function returns null, then
  * it is assumed that the user does not exist.
+ *
  * If the function is accessible via a schema, then add the schema name in the front of the value
  * and separate it from the table name with a period (.).
  *
@@ -172,6 +175,7 @@ $cfg['db_getUserEmailFunction'] = null;
 
 /**
  * Name of the function in the database, which is called to change a user's password.
+ *
  * If the function is accessible via a schema, then add the schema name in the front of the value
  * and separate it from the table name with a period (.).
  *
@@ -185,6 +189,8 @@ $cfg['db_changePasswordFunction'] = null;
 
 /**
  * Name of the function in the database, which is called to authenticate a user.
+ * Only used if hashing is done on database side (db_doPasswordHashingInDatabaseForFunctions is true).
+ *
  * If the function is accessible via a schema, then add the schema name in the front of the value
  * and separate it from the table name with a period (.).
  *
@@ -198,13 +204,34 @@ $cfg['db_changePasswordFunction'] = null;
 $cfg['db_userAuthenticateFunction'] = null;
 
 /**
- * Should the password be hashed before passing it to the functions defined by
- * db_changePasswordFunction and db_userAuthenticateFunction?
+ * Name of the function in the database, which is called to get the password hash of the user.
+ * Only used if hashing is done on application side (db_doPasswordHashingInDatabaseForFunctions is false).
  *
- * If the value is true, the password will be hashed with the method defined
- * with the db_passwordHashMethod parameter.
+ * If the function is accessible via a schema, then add the schema name in the front of the value
+ * and separate it from the table name with a period (.).
+ *
+ * The only input of the function is the username.
+ * The output of the function is the password hash of the user, or null if no user exists with
+ * the provided username.
+ *
+ * Note: Refer to db_useDBFunctions.
  */
-$cfg['db_useHashedPasswordForFunctions'] = true;
+$cfg['db_getUserPasswordHashFunction'] = null;
+
+/**
+ * Should the password hashing take place on the database side?
+ *
+ * If this value is false, the password will be hashed with the method defined
+ * with the db_passwordHashMethod parameter before being passed to the function
+ * defined by the db_changePasswordFunction parameter.
+ *
+ * If this value is true, the function defined by db_userAuthenticateFunction will be used for
+ * authenticating an user.
+ * If this value is false, the function defined by db_getUserPasswordHashFunction will be used
+ * to retrieve the user's password hash, which will then be used to authenticate the user on the
+ * application side.
+ */
+$cfg['db_doPasswordHashingInDatabaseForFunctions'] = true;
 
 
 

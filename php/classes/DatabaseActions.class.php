@@ -110,21 +110,34 @@ class DatabaseActions {
             throw new Exception('Missing database configuration.');
         }
 
-        if ($this->cfg['db_useHashedPasswordForFunctions'] === true) {
-            $password = $this->pwHasher->hashPassword($password);
-        }
+        $result = false;
 
-        $sql = 'SELECT ' . $this->cfg['db_userAuthenticateFunction'] . '(:username, :password)';
-        $sql = $this->addDualIfOracle($sql);
-        $stmt = $this->getConnection()->executeQuery(
-            $sql, array(
-                'username' => $username,
-                'password' => $password
-            ), array(
-                'username' => PDO::PARAM_STR,
-                'password' => PDO::PARAM_STR
-            ));
-        $result = $stmt->fetchColumn();
+        if ($this->cfg['db_doPasswordHashingInDatabaseForFunctions'] === true) {
+            $sql = 'SELECT ' . $this->cfg['db_userAuthenticateFunction'] . '(:username, :password)';
+            $sql = $this->addDualIfOracle($sql);
+            $stmt = $this->getConnection()->executeQuery(
+                $sql, array(
+                    'username' => $username,
+                    'password' => $password
+                ), array(
+                    'username' => PDO::PARAM_STR,
+                    'password' => PDO::PARAM_STR
+                ));
+            $result = $stmt->fetchColumn();
+        } else {
+            $sql = 'SELECT ' . $this->cfg['db_getUserPasswordHashFunction'] . '(:username)';
+            $sql = $this->addDualIfOracle($sql);
+            $stmt = $this->getConnection()->executeQuery(
+                $sql, array(
+                    'username' => $username
+                ), array(
+                    'username' => PDO::PARAM_STR
+                ));
+            $pwHash = $stmt->fetchColumn();
+            if (!empty($pwHash)) {
+                $result = $this->pwHasher->checkPassword($password, $pwHash);
+            }
+        }
 
         return $result;
     }
@@ -168,7 +181,7 @@ class DatabaseActions {
             throw new Exception('Missing database configuration.');
         }
 
-        if ($this->cfg['db_useHashedPasswordForFunctions'] === true) {
+        if ($this->cfg['db_doPasswordHashingInDatabaseForFunctions'] === false) {
             $newPassword = $this->pwHasher->hashPassword($newPassword);
         }
 
@@ -176,12 +189,12 @@ class DatabaseActions {
         $sql = $this->addDualIfOracle($sql);
         $stmt = $this->getConnection()->executeQuery(
             $sql, array(
-            'username' => $username,
-            'password' => $newPassword
-        ), array(
-            'username' => PDO::PARAM_STR,
-            'password' => PDO::PARAM_STR
-        ));
+                'username' => $username,
+                'password' => $newPassword
+            ), array(
+                'username' => PDO::PARAM_STR,
+                'password' => PDO::PARAM_STR
+            ));
         $stmt->fetchColumn();
 
         return true;
@@ -198,10 +211,10 @@ class DatabaseActions {
             $sql = $this->addDualIfOracle($sql);
             $this->getConnection()->executeQuery(
                 $sql, array(
-                'username' => $username
-            ), array(
-                'username' => PDO::PARAM_STR
-            ));
+                    'username' => $username
+                ), array(
+                    'username' => PDO::PARAM_STR
+                ));
         } catch (\Exception $e) {
             Logger::getInstance()->logDatabaseError($e->getMessage());
             throw $e;
