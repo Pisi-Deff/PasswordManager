@@ -8,7 +8,8 @@ function passwordSuccessfullyChangedMessage() {
 
     $centerContent = <<<ENDTPL
     
-    <div>Your password has been successfully changed.</div>
+    <p>Your password has been successfully changed.</p>
+    <p>You may now return to the site and log in with your new password.</p>
     
 ENDTPL;
 
