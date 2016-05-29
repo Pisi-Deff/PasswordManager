@@ -45,7 +45,7 @@ class DatabaseActions {
             && self::stringHasValue($this->cfg['db_emailColumn'])
             && self::stringHasValue($this->cfg['db_usernameColumn'])
         )) {
-            throw new Exception('Missing database configuration.');
+            throw new Exception('Missing database configuration: user table & columns');
         }
 
         $stmt = $this->getConnection()->createQueryBuilder()
@@ -61,7 +61,7 @@ class DatabaseActions {
 
     private function getUserEmailViaFunction($username) {
         if (!self::stringHasValue($this->cfg['db_getUserEmailFunction'])) {
-            throw new Exception('Missing database configuration.');
+            throw new Exception('Missing database configuration: db_getUserEmailFunction');
         }
 
         $sql = 'SELECT ' . $this->cfg['db_getUserEmailFunction'] . '(:username)';
@@ -91,7 +91,7 @@ class DatabaseActions {
             && self::stringHasValue($this->cfg['db_passwordColumn'])
             && self::stringHasValue($this->cfg['db_usernameColumn'])
         )) {
-            throw new Exception('Missing database configuration.');
+            throw new Exception('Missing database configuration: user table & columns');
         }
 
         $stmt = $this->getConnection()->createQueryBuilder()
@@ -164,7 +164,7 @@ class DatabaseActions {
                 && self::stringHasValue($this->cfg['db_passwordColumn'])
                 && self::stringHasValue($this->cfg['db_usernameColumn'])
             )) {
-            throw new Exception('Missing database configuration.');
+            throw new Exception('Missing database configuration: user table & columns');
         }
 
         $newHash = $this->pwHasher->hashPassword($newPassword);
@@ -182,7 +182,7 @@ class DatabaseActions {
 
     private function changeUserPasswordViaFunction($username, $newPassword) {
         if (!self::stringHasValue($this->cfg['db_changePasswordFunction'])) {
-            throw new Exception('Missing database configuration.');
+            throw new Exception('Missing database configuration: db_changePasswordFunction');
         }
 
         if ($this->cfg['db_doPasswordHashingInDatabaseForFunctions'] === false) {
