@@ -27,7 +27,7 @@ Have an application that does not have password reset functionality?
  * pdo_mysql for MySQL/MariaBD
 * Access to a mail server for sending emails.
 
-**Note**: The application has currently only been tested with PostgreSQL & MySQL databases. In theory, it should work with MSSQL/Oracle as well, as their simple select/update and function syntaxes are similar. I would appreciate it if anyone can confirm that it does.
+**Note**: The application has currently **NOT** been tested with Microsoft SQL Server databases. In theory, it should work, because the simple select/update and function syntaxes are similar. Though I would appreciate it if anyone can confirm that it does.
 
 # Installation
 

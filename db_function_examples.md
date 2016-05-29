@@ -166,3 +166,79 @@ CREATE FUNCTION fn_getPwHash
         RETURN pwhash;
     END
 ```
+
+## Oracle
+
+##### db_getUserEmailFunction
+
+```sql
+CREATE OR REPLACE FUNCTION getEmail
+    (user IN NVARCHAR2)
+    RETURN NVARCHAR2
+    IS
+        email users.email%TYPE;
+    BEGIN
+        SELECT u.email INTO email
+            FROM users u
+            WHERE u.username = user;
+        return email;
+    END;
+```
+
+##### db_changePasswordFunction
+
+```sql
+CREATE OR REPLACE FUNCTION changePass
+    (user IN NVARCHAR2, newpass IN NVARCHAR2)
+    RETURN NUMBER
+    IS
+        PRAGMA AUTONOMOUS_TRANSACTION; -- needed because we're changing data
+        pwhash users.pwhash%TYPE;
+    BEGIN
+        UPDATE users u
+            SET u.pwhash = newpass
+            WHERE u.username = user;
+        COMMIT; -- needed because we're changing data
+        return 1;
+    END;
+```
+
+##### db_userAuthenticateFunction
+
+```sql
+CREATE OR REPLACE FUNCTION auth
+    (user IN NVARCHAR2, pass IN NVARCHAR2)
+    RETURN NUMBER
+    IS
+        pwhash users.pwhash%TYPE;
+    BEGIN
+        SELECT u.pwhash INTO pwhash
+            FROM users u
+            WHERE u.username = user;
+        IF pwhash = pass THEN
+            return 1;
+        END IF;
+        
+        return 0;
+    
+    EXCEPTION
+        WHEN no_data_found 
+        THEN return 0;
+    END;
+```
+
+##### db_getUserPasswordHashFunction
+
+```sql
+CREATE OR REPLACE FUNCTION getPWhash
+    (user IN NVARCHAR2)
+    RETURN NVARCHAR2
+    IS
+        pwhash users.pwhash%TYPE;
+    BEGIN
+        SELECT u.pwhash INTO pwhash
+            FROM users u
+            WHERE u.username = user;
+        return pwhash;
+    END;
+```
