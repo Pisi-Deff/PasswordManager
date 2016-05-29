@@ -24,7 +24,7 @@ Have an application that does not have password reset functionality?
  * pdo_pgsql for PostgreSQL
  * sqlsrv for Microsoft SQL Server
  * oci8 for Oracle Database
- * pdo_mysql for MySQL/MariaBD
+ * pdo_mysql for MySQL/MariaDB
 * Access to a mail server for sending emails.
 
 **Note**: The application has currently **NOT** been tested with Microsoft SQL Server databases. In theory, it should work, because the simple select/update and function syntaxes are similar. Though I would appreciate it if anyone can confirm that it does.
