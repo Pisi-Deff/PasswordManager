@@ -18,7 +18,7 @@ Have an application that does not have password reset functionality?
 # Requirements
 
 * PHP 5.3.2+ on the webserver.
-* Your application stores emails and password hashes in the database. And optionally usernames as well.
+* Your application stores emails and password hashes in the database. And usernames as well if your system does not use email addresses as usernames.
 * Your application either uses bcrypt, sha256, or sha512 to hash passwords or does hashing in the database.
 * The PHP module for the database you wish to use must be installed on the webserver:
  * pdo_pgsql for PostgreSQL
