@@ -106,13 +106,17 @@ class DatabaseActions {
     }
 
     private function authenticateUserViaFunction($username, $password) {
-        if (!self::stringHasValue($this->cfg['db_userAuthenticateFunction'])) {
-            throw new Exception('Missing database configuration.');
+        $hashInDB = $this->cfg['db_doPasswordHashingInDatabaseForFunctions'] === true;
+
+        if ($hashInDB && !self::stringHasValue($this->cfg['db_userAuthenticateFunction'])) {
+            throw new Exception('Missing database configuration: db_userAuthenticateFunction');
+        } else if (!$hashInDB && !self::stringHasValue($this->cfg['db_getUserPasswordHashFunction'])) {
+            throw new Exception('Missing database configuration: db_getUserPasswordHashFunction');
         }
 
         $result = false;
 
-        if ($this->cfg['db_doPasswordHashingInDatabaseForFunctions'] === true) {
+        if ($hashInDB) {
             $sql = 'SELECT ' . $this->cfg['db_userAuthenticateFunction'] . '(:username, :password)';
             $sql = $this->addDualIfOracle($sql);
             $stmt = $this->getConnection()->executeQuery(
