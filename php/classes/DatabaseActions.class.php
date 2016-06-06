@@ -50,9 +50,13 @@ class DatabaseActions {
 
         $stmt = $this->getConnection()->createQueryBuilder()
             ->select($this->cfg['db_emailColumn'])
-            ->from($this->cfg['db_userTable'])
-            ->where($this->cfg['db_usernameColumn'] . ' = ?')
-            ->setParameter(0, $username)
+            ->from($this->cfg['db_userTable']);
+        if ($this->isEmailUsername()) {
+            $stmt = $stmt->where('LOWER(' . $this->cfg['db_usernameColumn'] . ') = LOWER(?)');
+        } else {
+            $stmt = $stmt->where($this->cfg['db_usernameColumn'] . ' = ?');
+        }
+        $stmt = $stmt->setParameter(0, $username)
             ->execute();
         $email = $stmt->fetchColumn();
 
@@ -96,9 +100,13 @@ class DatabaseActions {
 
         $stmt = $this->getConnection()->createQueryBuilder()
             ->select($this->cfg['db_passwordColumn'])
-            ->from($this->cfg['db_userTable'])
-            ->where($this->cfg['db_usernameColumn'] . ' = ?')
-            ->setParameter(0, $username)
+            ->from($this->cfg['db_userTable']);
+        if ($this->isEmailUsername()) {
+            $stmt = $stmt->where('LOWER(' . $this->cfg['db_usernameColumn'] . ') = LOWER(?)');
+        } else {
+            $stmt = $stmt->where($this->cfg['db_usernameColumn'] . ' = ?');
+        }
+        $stmt = $stmt->setParameter(0, $username)
             ->execute();
         $hash = $stmt->fetchColumn();
 
@@ -169,11 +177,15 @@ class DatabaseActions {
 
         $newHash = $this->pwHasher->hashPassword($newPassword);
 
-        $affectedRows = $this->getConnection()->createQueryBuilder()
+        $stmt = $this->getConnection()->createQueryBuilder()
             ->update($this->cfg['db_userTable'])
-            ->set($this->cfg['db_passwordColumn'], ':newHash')
-            ->where($this->cfg['db_usernameColumn'] . ' = :username')
-            ->setParameter('newHash', $newHash)
+            ->set($this->cfg['db_passwordColumn'], ':newHash');
+        if ($this->isEmailUsername()) {
+            $stmt = $stmt->where('LOWER(' . $this->cfg['db_usernameColumn'] . ') = LOWER(:username)');
+        } else {
+            $stmt = $stmt->where($this->cfg['db_usernameColumn'] . ' = :username');
+        }
+        $affectedRows = $stmt->setParameter('newHash', $newHash)
             ->setParameter('username', $username)
             ->execute();
 
@@ -234,5 +246,9 @@ class DatabaseActions {
 
     private static function stringHasValue($str) {
         return !($str === null || !strlen(trim($str)));
+    }
+
+    private function isEmailUsername() {
+        return $this->cfg['db_usernameColumn'] === $this->cfg['db_emailColumn'];
     }
 }
